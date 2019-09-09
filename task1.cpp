@@ -1,6 +1,8 @@
 #include <iostream>
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
+#include <cstring>
 
 using namespace std;
 
@@ -314,6 +316,8 @@ class Point {
 	char s;
 	screen *scr;
 public:
+	Point() :
+		x{0}, y{0}, s{'*'}, scr{nullptr} {}
 	Point(int x_, int y_, char s_, screen *scr_) :
 		x{x_}, y{y_}, s{s_}, scr{scr_} {}
 	Point(Point const &other) {
@@ -351,16 +355,43 @@ public:
 		return *this;
 	}
 	~Point() {}
+	int get_x() {
+		return x;
+	}
+	void set_x(int x_) {
+		x = x_;
+	}
+	int get_y() {
+		return y;
+	}
+	void set_y(int y_) {
+		y = y_;
+	}
+	char get_s() {
+		return s;
+	}
+	void set_s(char s_) {
+		s = s_;
+	}
+	screen *get_scr() {
+		return scr;
+	}
+	void set_scr(screen *scr_) {
+		scr = scr_;
+	}
 	void draw() {
 		if (scr != nullptr)
 			scr->point(x, y, s);
 	}
+	void write(ostream &file) {
+		file << "point";
+		file << " " << x;
+		file << " " << y;
+		file << " " << s;
+		file << endl;
+	}
 	void info() {
-		cout << "point";
-		cout << " " << x;
-		cout << " " << y;
-		cout << " " << s;
-		cout << endl;
+		write(cout);
 	}
 };
 
@@ -369,6 +400,8 @@ class Ellipse {
 	char s;
 	screen *scr;
 public:
+	Ellipse() :
+		x{0}, y{0}, a{0}, b{0}, s{0}, scr{nullptr} {}
 	Ellipse(int x_, int y_, int a_, int b_, char s_, screen *scr_) :
 		x{x_}, y{y_}, a{a_}, b{b_}, s{s_},scr{scr_} {}
 	Ellipse(Ellipse const &other) {
@@ -418,18 +451,57 @@ public:
 		return *this;
 	}
 	~Ellipse() {}
+	int get_x() {
+		return x;
+	}
+	void set_x(int x_) {
+		x = x_;
+	}
+	int get_y() {
+		return y;
+	}
+	void set_y(int y_) {
+		y = y_;
+	}
+	int get_a() {
+		return a;
+	}
+	void set_a(int a_) {
+		a = a_;
+	}
+	int get_b() {
+		return b;
+	}
+	void set_b(int b_) {
+		b = b_;
+	}
+	char get_s() {
+		return s;
+	}
+	void set_s(char s_) {
+		s = s_;
+	}
+	screen *get_scr() {
+		return scr;
+	}
+	void set_scr(screen *scr_) {
+		scr = scr_;
+	}
 	void draw() {
 		if (scr != nullptr)
 			scr->ellipse(x, y, a, b, s);
 	}
+	void write(ostream &file) {
+		file << "ellipse";
+		file << " " << x;
+		file << " " << y;
+		file << " " << a;
+		file << " " << b;
+		file << " " << s;
+		file << endl;
+	}
 	void info() {
-		cout << "ellipse";
-		cout << " " << x;
-		cout << " " << y;
-		cout << " " << a;
-		cout << " " << b;
-		cout << " " << s;
-		cout << endl;
+		write(cout);
 	}
 };
 
@@ -438,10 +510,109 @@ class Polygon {
 	char s;
 	screen *scr;
 public:
+	Polygon() :
+		x{0}, y{0}, n{0}, l{0}, s{0}, scr{nullptr} {}
 	Polygon(int x_, int y_, int n_, int l_, char s_, screen *scr_) :
 		x{x_}, y{x_}, n{n_}, l{l_}, s{s_}, scr{scr_} {}
-	void draw();
-	void info();
+	Polygon(Polygon const &other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->n = other.n;
+		this->l = other.l;
+		this->s = other.s;
+		this->scr = other.scr;
+	}
+	Polygon(Polygon &&other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->n = other.n;
+		this->l = other.l;
+		this->s = other.s;
+		this->scr = other.scr;
+		other.x = 0;
+		other.y = 0;
+		other.n = 0;
+		other.l = 0;
+		other.s = 0;
+		other.scr = nullptr;
+	}
+	Polygon &operator=(Polygon const &other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->n = other.n;
+		this->l = other.l;
+		this->s = other.s;
+		this->scr = other.scr;
+		return *this;
+	}
+	Polygon &operator=(Polygon &&other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->n = other.n;
+		this->l = other.l;
+		this->s = other.s;
+		this->scr = other.scr;
+		other.x = 0;
+		other.y = 0;
+		other.n = 0;
+		other.l = 0;
+		other.s = 0;
+		other.scr = nullptr;
+		return *this;
+	}
+	~Polygon() {}
+	int get_x() {
+		return x;
+	}
+	void set_x(int x_) {
+		x = x_;
+	}
+	int get_y() {
+		return y;
+	}
+	void set_y(int y_) {
+		y = y_;
+	}
+	int get_n() {
+		return n;
+	}
+	void set_n(int n_) {
+		n = n_;
+	}
+	int get_l() {
+		return l;
+	}
+	void set_l(int l_) {
+		l = l_;
+	}
+	char get_s() {
+		return s;
+	}
+	void set_s(char s_) {
+		s = s_;
+	}
+	screen *get_scr() {
+		return scr;
+	}
+	void set_scr(screen *scr_) {
+		scr = scr_;
+	}
+	void draw() {
+		if (scr != nullptr)
+			scr->polygon(x, y, n, l, s);
+	}
+	void write(ostream &file) {
+		file << "polygon";
+		file << " " << x;
+		file << " " << y;
+		file << " " << n;
+		file << " " << l;
+		file << " " << s;
+		file << endl;
+	}
+	void info() {
+		write(cout);
+	}
 };
 
 class Line {
@@ -449,28 +620,275 @@ class Line {
 	char s;
 	screen *scr;
 public:
+	Line() :
+		x{0}, y{0}, xp{0}, yp{0}, s{0}, scr{nullptr} {}
 	Line(int x_, int y_, int xp_, int yp_, char s_, screen *scr_) :
 		x{x_}, y{y_}, xp{xp_}, yp{yp_}, s{s_}, scr{scr_} {}
-	void draw();
-	void info();
+	Line(Line const &other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->xp = other.xp;
+		this->yp = other.yp;
+		this->s = other.s;
+		this->scr = other.scr;
+	}
+	Line(Line &&other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->xp = other.xp;
+		this->yp = other.yp;
+		this->s = other.s;
+		this->scr = other.scr;
+		other.x = 0;
+		other.y = 0;
+		other.xp = 0;
+		other.yp = 0;
+		other.s = 0;
+		other.scr = 0;
+	}
+	Line &operator=(Line const &other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->xp = other.xp;
+		this->yp = other.yp;
+		this->s = other.s;
+		this->scr = other.scr;
+		return *this;
+	}
+	Line &operator=(Line &&other) {
+		this->x = other.x;
+		this->y = other.y;
+		this->xp = other.xp;
+		this->yp = other.yp;
+		this->s = other.s;
+		this->scr = other.scr;
+		other.x = 0;
+		other.y = 0;
+		other.xp = 0;
+		other.yp = 0;
+		other.s = 0;
+		other.scr = 0;
+		return *this;
+	}
+	~Line() {}
+	int get_x() {
+		return x;
+	}
+	void set_x(int x_) {
+		x = x_;
+	}
+	int get_y() {
+		return y;
+	}
+	void set_y(int y_) {
+		y = y_;
+	}
+	int get_xp() {
+		return xp;
+	}
+	void set_xp(int xp_) {
+		xp = xp_;
+	}
+	int get_yp() {
+		return yp;
+	}
+	void set_yp(int yp_) {
+		yp = yp_;
+	}
+	char get_s() {
+		return s;
+	}
+	void set_s(char s_) {
+		s = s_;
+	}
+	screen *get_scr() {
+		return scr;
+	}
+	void set_scr(screen *scr_) {
+		scr = scr_;
+	}
+	void draw() {
+		if (scr != nullptr)
+			scr->line(x, y, xp, yp, s);
+	}
+	void write(ostream &file) {
+		file << "line";
+		file << " " << x;
+		file << " " << y;
+		file << " " << xp;
+		file << " " << yp;
+		file << " " << s;
+		file << endl;
+	}
+	void info() {
+		write(cout);
+	}
 };
 
 template <class S>
 class Bunch {
+	static int const max_length = 32;
+	S items[max_length];
+	size_t length;
 public:
+	Bunch() :
+		length{0} {}
+	~Bunch() {}
+	size_t get_length() {
+		return length;
+	}
+	S &operator[](size_t index) {
+		return items[index];
+	}
+	int add(S item) {
+		if (length < max_length) {
+			items[length++] = item;
+			return 0;
+		}
+		return -1;
+	}
+	int remove() {
+		if (length > 0) {
+			--length;
+			return 0;
+		}
+		return -1;
+	}
+	void list() {
+		for (int i = 0; i < length; ++i) {
+			items[i].info();
+		}
+	}
+	void paint(int index) {
+		if (index == length) {
+			for (int i = 0; i < length; ++i) {
+				items[i].draw();
+			}
+		} else if (index < length) {
+			items[index].draw();
+		}
+	}
 };
-// main function
+
+template <class T>
+void draw_bunch(Bunch<T> &bunch, int index)
+{
+	if (index <= bunch.get_length()) {
+		bunch.paint(index);
+	} else {
+		cerr << "index out of range" << endl;
+	}
+}
+
+void bad_input()
+{
+	cerr << "bad input" << endl;
+}
+
+int add(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
+         Bunch<Polygon> &bunch_polygon, Bunch<Line> &bunch_line,
+         screen &scr, char const *command)
+{
+	int x, y, a, b;
+	char s;
+	if (sscanf(command, "point %i %i %c", &x, &y, &s) == 3) {
+		auto point = Point(x, y, s, &scr);
+		point.draw();
+		scr.display();
+		if (bunch_point.add(point))
+			cerr << "adding point failed" << endl;
+		else
+			return 0;
+	} else if (sscanf(command, "ellipse %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
+		auto ellipse = Ellipse(x, y, a, b, s, &scr);
+		ellipse.draw();
+		scr.display();
+		if (bunch_ellipse.add(ellipse))
+			cerr << "adding ellipse failed" << endl;
+		else
+			return 0;
+	} else if (sscanf(command, "polygon %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
+		auto polygon = Polygon(x, y, a, b, s, &scr);
+		polygon.draw();
+		scr.display();
+		if (bunch_polygon.add(polygon))
+			cerr << "adding polygon failed" << endl;
+		else
+			return 0;
+	} else if (sscanf(command, "line %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
+		auto line = Line(x, y, a, b, s, &scr);
+		line.draw();
+		scr.display();
+		if (bunch_line.add(line))
+			cerr << "adding line failed" << endl;
+		else
+			return 0;
+	}
+	return -1;
+}
+
 int
 main()
 {
-	screen s;
-	//      s.clear();                              // clear the screen
-//      s.axes('+');                            // show axis using +
-	s.point(-14, -16, '$'); // show point using $
-	s.ellipse(6, 6, 5, 5, '*');     // circle since 5 = 5
-	s.ellipse(-10, 8, 9, 5, '*');   // ellipse since 9 != 5
-	s.polygon(-9, -9, 6, 8, '#');   // show 6-gon with length 8
-	s.line(9, -12, 19, 7, '-');     // line from (9,12) to (19,7)
-	s.display();            // display whatever drawn
+	string input;
+	char const *cstr;
+	char shape[16];
+	int index;
+	Bunch<Point> bunch_point;
+	Bunch<Ellipse> bunch_ellipse;
+	Bunch<Polygon> bunch_polygon;
+	Bunch<Line> bunch_line;
+	screen scr;
+	while (true) {
+		cout << "> ";
+		getline(cin, input);
+		cstr = input.c_str();
+		if (strncmp(cstr, "draw ", 5) == 0) {
+			add(bunch_point, bunch_ellipse, bunch_polygon, bunch_line, scr, cstr+5);
+		} else if (strcmp(cstr, "clear") == 0) {
+			scr.clear();
+			scr.display();
+			cout << "ok" << endl;
+		} else if (sscanf(cstr, "list %s", shape) == 1) {
+			if (strcmp(shape, "all") == 0) {
+				bunch_point.list();
+				bunch_ellipse.list();
+				bunch_polygon.list();
+				bunch_line.list();
+			} else if (strcmp(shape, "point") == 0) {
+				bunch_point.list();
+			} else if (strcmp(shape, "ellipse") == 0) {
+				bunch_ellipse.list();
+			} else if (strcmp(shape, "polygon") == 0) {
+				bunch_polygon.list();
+			} else if (strcmp(shape, "line") == 0) {
+				bunch_line.list();
+			} else {
+				bad_input();
+			}
+		} else if (strcmp(cstr, "paint all") == 0) {
+			scr.clear();
+			bunch_point.paint(bunch_point.get_length());
+			bunch_ellipse.paint(bunch_ellipse.get_length());
+			bunch_polygon.paint(bunch_polygon.get_length());
+			bunch_line.paint(bunch_line.get_length());
+		} else if (sscanf(cstr, "paint %s %i", shape, &index) == 2) {
+			if (strcmp(shape, "point") == 0) {
+				draw_bunch(bunch_point, index);
+			} else if (strcmp(shape, "ellipse") == 0) {
+				draw_bunch(bunch_ellipse, index);
+			} else if (strcmp(shape, "polygon") == 0) {
+				draw_bunch(bunch_polygon, index);
+			} else if (strcmp(shape, "line") == 0) {
+				draw_bunch(bunch_line, index);
+			} else {
+				bad_input();
+			}
+		} else if (strcmp(cstr, "exit") == 0) {
+			break;
+		} else {
+			bad_input();
+		}
+	}
 	return 0;
 }
