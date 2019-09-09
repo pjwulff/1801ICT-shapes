@@ -945,6 +945,9 @@ main()
 			bunch_line.clear();
 			scr.clear();
 			scr.display();
+		} else if (strcmp(cstr, "clear screen") == 0) {
+			scr.clear();
+			scr.display();
 		} else if (sscanf(cstr, "list %s", shape) == 1) {
 			if (strcmp(shape, "all") == 0) {
 				bunch_point.list();
