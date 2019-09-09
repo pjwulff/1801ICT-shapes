@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <cmath>
 #include <cstdlib>
 #include <cstdio>
@@ -740,6 +741,9 @@ public:
 	S &operator[](size_t index) {
 		return items[index];
 	}
+	void clear() {
+		length = 0;
+	}
 	int add(S item) {
 		if (length < max_length) {
 			items[length++] = item;
@@ -753,6 +757,11 @@ public:
 			return 0;
 		}
 		return -1;
+	}
+	void write(ostream &file) {
+		for (int i = 0; i < length; ++i) {
+			items[i].write(file);
+		}
 	}
 	void list() {
 		for (int i = 0; i < length; ++i) {
@@ -793,32 +802,24 @@ int add(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
 	char s;
 	if (sscanf(command, "point %i %i %c", &x, &y, &s) == 3) {
 		auto point = Point(x, y, s, &scr);
-		point.draw();
-		scr.display();
 		if (bunch_point.add(point))
 			cerr << "adding point failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "ellipse %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
 		auto ellipse = Ellipse(x, y, a, b, s, &scr);
-		ellipse.draw();
-		scr.display();
 		if (bunch_ellipse.add(ellipse))
 			cerr << "adding ellipse failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "polygon %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
 		auto polygon = Polygon(x, y, a, b, s, &scr);
-		polygon.draw();
-		scr.display();
 		if (bunch_polygon.add(polygon))
 			cerr << "adding polygon failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "line %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
 		auto line = Line(x, y, a, b, s, &scr);
-		line.draw();
-		scr.display();
 		if (bunch_line.add(line))
 			cerr << "adding line failed" << endl;
 		else
@@ -827,12 +828,51 @@ int add(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
 	return -1;
 }
 
+int read(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
+         Bunch<Polygon> &bunch_polygon, Bunch<Line> &bunch_line,
+         screen &scr, char const *filename)
+{
+	ifstream file;
+	file.open(filename);
+	if (file.fail()) {
+		cerr << "could not open file" << endl;
+		return -1;
+	}
+	string line;
+	bunch_point.clear();
+	bunch_ellipse.clear();
+	bunch_polygon.clear();
+	bunch_line.clear();
+	while (getline(file, line)) {
+		if (add(bunch_point, bunch_ellipse, bunch_polygon, bunch_line,
+		    scr, line.c_str())) {
+			cerr << "bad file input" << endl;
+			return -1;
+		}
+	}
+	return 0;
+}
+
+int write(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
+          Bunch<Polygon> &bunch_polygon, Bunch<Line> &bunch_line,
+          char const *filename)
+{
+	ofstream file;
+	file.open(filename);
+	bunch_point.write(file);
+	bunch_ellipse.write(file);
+	bunch_polygon.write(file);
+	bunch_line.write(file);
+	return 0;
+}
+
 int
 main()
 {
 	string input;
 	char const *cstr;
 	char shape[16];
+	char filename[256];
 	int index;
 	Bunch<Point> bunch_point;
 	Bunch<Ellipse> bunch_ellipse;
@@ -845,6 +885,7 @@ main()
 		cstr = input.c_str();
 		if (strncmp(cstr, "draw ", 5) == 0) {
 			add(bunch_point, bunch_ellipse, bunch_polygon, bunch_line, scr, cstr+5);
+			scr.display();
 		} else if (strcmp(cstr, "clear") == 0) {
 			scr.clear();
 			scr.display();
@@ -872,6 +913,7 @@ main()
 			bunch_ellipse.paint(bunch_ellipse.get_length());
 			bunch_polygon.paint(bunch_polygon.get_length());
 			bunch_line.paint(bunch_line.get_length());
+			scr.display();
 		} else if (sscanf(cstr, "paint %s %i", shape, &index) == 2) {
 			if (strcmp(shape, "point") == 0) {
 				draw_bunch(bunch_point, index);
@@ -884,6 +926,22 @@ main()
 			} else {
 				bad_input();
 			}
+		} else if (sscanf(cstr, "read %s", filename) == 1) {
+			if (read(bunch_point, bunch_ellipse,
+			     bunch_polygon, bunch_line,
+			     scr, filename)) {
+			} else {
+				scr.clear();
+				bunch_point.paint(bunch_point.get_length());
+				bunch_ellipse.paint(bunch_ellipse.get_length());
+				bunch_polygon.paint(bunch_polygon.get_length());
+				bunch_line.paint(bunch_line.get_length());
+				scr.display();
+			}
+		} else if (sscanf(cstr, "write %s", filename) == 1) {
+			write(bunch_point, bunch_ellipse,
+			     bunch_polygon, bunch_line,
+			     filename);
 		} else if (strcmp(cstr, "exit") == 0) {
 			break;
 		} else {
