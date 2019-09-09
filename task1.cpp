@@ -780,10 +780,11 @@ public:
 };
 
 template <class T>
-void draw_bunch(Bunch<T> &bunch, int index)
+void draw_bunch(Bunch<T> &bunch, int index, screen &scr)
 {
 	if (index <= bunch.get_length()) {
 		bunch.paint(index);
+		scr.display();
 	} else {
 		cerr << "index out of range" << endl;
 	}
@@ -802,24 +803,28 @@ int add(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
 	char s;
 	if (sscanf(command, "point %i %i %c", &x, &y, &s) == 3) {
 		auto point = Point(x, y, s, &scr);
+		point.draw();
 		if (bunch_point.add(point))
 			cerr << "adding point failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "ellipse %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
 		auto ellipse = Ellipse(x, y, a, b, s, &scr);
+		ellipse.draw();
 		if (bunch_ellipse.add(ellipse))
 			cerr << "adding ellipse failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "polygon %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
 		auto polygon = Polygon(x, y, a, b, s, &scr);
+		polygon.draw();
 		if (bunch_polygon.add(polygon))
 			cerr << "adding polygon failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "line %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
 		auto line = Line(x, y, a, b, s, &scr);
+		line.draw();
 		if (bunch_line.add(line))
 			cerr << "adding line failed" << endl;
 		else
@@ -866,6 +871,40 @@ int write(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
 	return 0;
 }
 
+int remove(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
+          Bunch<Polygon> &bunch_polygon, Bunch<Line> &bunch_line,
+          char const *shape)
+{
+	if (strcmp(shape, "point") == 0) {
+		if (bunch_point.remove()) {
+			cerr << "failed to remove point" << endl;
+			return -1;
+		} else {
+			return 0;
+		}
+	} else if (strcmp(shape, "ellipse") == 0) {
+		if (bunch_ellipse.remove()) {
+			return -1;
+		} else {
+			return 0;
+		}
+	} else if (strcmp(shape, "polygon") == 0) {
+		if (bunch_polygon.remove()) {
+			return -1;
+		} else {
+			return 0;
+		}
+	} else if (strcmp(shape, "line") == 0) {
+		if (bunch_line.remove()) {
+			return -1;
+		} else {
+			return 0;
+		}
+	}
+	bad_input();
+	return -1;
+}
+
 int
 main()
 {
@@ -884,12 +923,28 @@ main()
 		getline(cin, input);
 		cstr = input.c_str();
 		if (strncmp(cstr, "draw ", 5) == 0) {
-			add(bunch_point, bunch_ellipse, bunch_polygon, bunch_line, scr, cstr+5);
-			scr.display();
+			if (add(bunch_point, bunch_ellipse, bunch_polygon, bunch_line, scr, cstr+5)) {
+				bad_input();
+			} else {
+				scr.display();
+			}
+		} else if (sscanf(cstr, "remove %s", shape) == 1) {
+			if (remove(bunch_point, bunch_ellipse, bunch_polygon, bunch_line, shape)) {
+			} else {
+				scr.clear();
+				bunch_point.paint(bunch_point.get_length());
+				bunch_ellipse.paint(bunch_ellipse.get_length());
+				bunch_polygon.paint(bunch_polygon.get_length());
+				bunch_line.paint(bunch_line.get_length());
+				scr.display();
+			}
 		} else if (strcmp(cstr, "clear") == 0) {
+			bunch_point.clear();
+			bunch_ellipse.clear();
+			bunch_polygon.clear();
+			bunch_line.clear();
 			scr.clear();
 			scr.display();
-			cout << "ok" << endl;
 		} else if (sscanf(cstr, "list %s", shape) == 1) {
 			if (strcmp(shape, "all") == 0) {
 				bunch_point.list();
@@ -915,27 +970,24 @@ main()
 			bunch_line.paint(bunch_line.get_length());
 			scr.display();
 		} else if (sscanf(cstr, "paint %s %i", shape, &index) == 2) {
+			scr.clear();
 			if (strcmp(shape, "point") == 0) {
-				draw_bunch(bunch_point, index);
+				draw_bunch(bunch_point, index, scr);
 			} else if (strcmp(shape, "ellipse") == 0) {
-				draw_bunch(bunch_ellipse, index);
+				draw_bunch(bunch_ellipse, index, scr);
 			} else if (strcmp(shape, "polygon") == 0) {
-				draw_bunch(bunch_polygon, index);
+				draw_bunch(bunch_polygon, index, scr);
 			} else if (strcmp(shape, "line") == 0) {
-				draw_bunch(bunch_line, index);
+				draw_bunch(bunch_line, index, scr);
 			} else {
 				bad_input();
 			}
 		} else if (sscanf(cstr, "read %s", filename) == 1) {
+			scr.clear();
 			if (read(bunch_point, bunch_ellipse,
 			     bunch_polygon, bunch_line,
 			     scr, filename)) {
 			} else {
-				scr.clear();
-				bunch_point.paint(bunch_point.get_length());
-				bunch_ellipse.paint(bunch_ellipse.get_length());
-				bunch_polygon.paint(bunch_polygon.get_length());
-				bunch_line.paint(bunch_line.get_length());
 				scr.display();
 			}
 		} else if (sscanf(cstr, "write %s", filename) == 1) {
