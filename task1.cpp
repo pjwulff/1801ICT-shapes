@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <cmath>
 #include <cstdlib>
@@ -384,15 +385,13 @@ public:
 		if (scr != nullptr)
 			scr->point(x, y, s);
 	}
-	void write(ostream &file) {
-		file << "point";
-		file << " " << x;
-		file << " " << y;
-		file << " " << s;
-		file << endl;
-	}
-	void info() {
-		write(cout);
+	string info() {
+		string str = "point";
+		str += " " + to_string(x);
+		str += " " + to_string(y);
+		str += " ";
+		str.push_back(s);
+		return str;
 	}
 };
 
@@ -492,17 +491,14 @@ public:
 		if (scr != nullptr)
 			scr->ellipse(x, y, a, b, s);
 	}
-	void write(ostream &file) {
-		file << "ellipse";
-		file << " " << x;
-		file << " " << y;
-		file << " " << a;
-		file << " " << b;
-		file << " " << s;
-		file << endl;
-	}
-	void info() {
-		write(cout);
+	string info() {
+		string str = "ellipse";
+		str += " " + to_string(x);
+		str += " " + to_string(a);
+		str += " " + to_string(b);
+		str += " ";
+		str.push_back(s);
+		return str;
 	}
 };
 
@@ -602,17 +598,15 @@ public:
 		if (scr != nullptr)
 			scr->polygon(x, y, n, l, s);
 	}
-	void write(ostream &file) {
-		file << "polygon";
-		file << " " << x;
-		file << " " << y;
-		file << " " << n;
-		file << " " << l;
-		file << " " << s;
-		file << endl;
-	}
-	void info() {
-		write(cout);
+	string info() {
+		string str = "polygon";
+		str += " " + to_string(x);
+		str += " " + to_string(y);
+		str += " " + to_string(n);
+		str += " " + to_string(l);
+		str += " ";
+		str.push_back(s);
+		return str;
 	}
 };
 
@@ -712,17 +706,15 @@ public:
 		if (scr != nullptr)
 			scr->line(x, y, xp, yp, s);
 	}
-	void write(ostream &file) {
-		file << "line";
-		file << " " << x;
-		file << " " << y;
-		file << " " << xp;
-		file << " " << yp;
-		file << " " << s;
-		file << endl;
-	}
-	void info() {
-		write(cout);
+	string info() {
+		string str = "line";
+		str += " " + to_string(x);
+		str += " " + to_string(y);
+		str += " " + to_string(xp);
+		str += " " + to_string(yp);
+		str += " ";
+		str.push_back(s);
+		return str;
 	}
 };
 
@@ -760,13 +752,11 @@ public:
 	}
 	void write(ostream &file) {
 		for (int i = 0; i < length; ++i) {
-			items[i].write(file);
+			file << items[i].info() << endl;
 		}
 	}
 	void list() {
-		for (int i = 0; i < length; ++i) {
-			items[i].info();
-		}
+		write(cout);
 	}
 	void paint(int index) {
 		if (index == length) {
