@@ -510,7 +510,7 @@ public:
 	Polygon() :
 		x{0}, y{0}, n{0}, l{0}, s{0}, scr{nullptr} {}
 	Polygon(int x_, int y_, int n_, int l_, char s_, screen *scr_) :
-		x{x_}, y{x_}, n{n_}, l{l_}, s{s_}, scr{scr_} {}
+		x{x_}, y{y_}, n{n_}, l{l_}, s{s_}, scr{scr_} {}
 	Polygon(Polygon const &other) {
 		this->x = other.x;
 		this->y = other.y;
@@ -751,16 +751,16 @@ public:
 		return -1;
 	}
 	void write(ostream &file) {
-		for (int i = 0; i < length; ++i) {
+		for (size_t i = 0; i < length; ++i) {
 			file << items[i].info() << endl;
 		}
 	}
 	void list() {
 		write(cout);
 	}
-	void paint(int index) {
+	void paint(size_t index) {
 		if (index == length) {
-			for (int i = 0; i < length; ++i) {
+			for (size_t i = 0; i < length; ++i) {
 				items[i].draw();
 			}
 		} else if (index < length) {
@@ -770,7 +770,7 @@ public:
 };
 
 template <class T>
-void draw_bunch(Bunch<T> &bunch, int index, screen &scr)
+void draw_bunch(Bunch<T> &bunch, size_t index, screen &scr)
 {
 	if (index <= bunch.get_length()) {
 		bunch.paint(index);

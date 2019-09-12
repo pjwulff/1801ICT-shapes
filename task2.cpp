@@ -640,16 +640,16 @@ public:
 		return -1;
 	}
 	void write(ostream &file) {
-		for (int i = 0; i < length; ++i) {
+		for (size_t i = 0; i < length; ++i) {
 			file << items[i]->info() << endl;
 		}
 	}
 	void list() {
 		write(cout);
 	}
-	void paint(int index) {
+	void paint(size_t index) {
 		if (index == length) {
-			for (int i = 0; i < length; ++i) {
+			for (size_t i = 0; i < length; ++i) {
 				items[i]->draw();
 			}
 		} else if (index < length) {
@@ -658,7 +658,7 @@ public:
 	}
 };
 
-void draw_bunch(Bunch &bunch, int index, screen &scr)
+void draw_bunch(Bunch &bunch, size_t index, screen &scr)
 {
 	if (index <= bunch.get_length()) {
 		bunch.paint(index);
