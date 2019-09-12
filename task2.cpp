@@ -477,6 +477,7 @@ public:
 	string info() {
 		string str = "ellipse";
 		str += " " + to_string(x);
+		str += " " + to_string(y);
 		str += " " + to_string(a);
 		str += " " + to_string(b);
 		str += " ";

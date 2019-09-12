@@ -494,6 +494,7 @@ public:
 	string info() {
 		string str = "ellipse";
 		str += " " + to_string(x);
+		str += " " + to_string(y);
 		str += " " + to_string(a);
 		str += " " + to_string(b);
 		str += " ";
@@ -721,7 +722,7 @@ public:
 template <class S>
 class Bunch {
 	static int const max_length = 32;
-	S items[max_length];
+	S *items[max_length];
 	size_t length;
 public:
 	Bunch() :
@@ -736,7 +737,7 @@ public:
 	void clear() {
 		length = 0;
 	}
-	int add(S item) {
+	int add(S *item) {
 		if (length < max_length) {
 			items[length++] = item;
 			return 0;
@@ -745,14 +746,14 @@ public:
 	}
 	int remove() {
 		if (length > 0) {
-			--length;
+			delete items[--length];
 			return 0;
 		}
 		return -1;
 	}
 	void write(ostream &file) {
 		for (size_t i = 0; i < length; ++i) {
-			file << items[i].info() << endl;
+			file << items[i]->info() << endl;
 		}
 	}
 	void list() {
@@ -761,10 +762,10 @@ public:
 	void paint(size_t index) {
 		if (index == length) {
 			for (size_t i = 0; i < length; ++i) {
-				items[i].draw();
+				items[i]->draw();
 			}
 		} else if (index < length) {
-			items[index].draw();
+			items[index]->draw();
 		}
 	}
 };
@@ -792,29 +793,29 @@ int add(Bunch<Point> &bunch_point, Bunch<Ellipse> &bunch_ellipse,
 	int x, y, a, b;
 	char s;
 	if (sscanf(command, "point %i %i %c", &x, &y, &s) == 3) {
-		auto point = Point(x, y, s, &scr);
-		point.draw();
+		auto point = new Point(x, y, s, &scr);
+		point->draw();
 		if (bunch_point.add(point))
 			cerr << "adding point failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "ellipse %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
-		auto ellipse = Ellipse(x, y, a, b, s, &scr);
-		ellipse.draw();
+		auto ellipse = new Ellipse(x, y, a, b, s, &scr);
+		ellipse->draw();
 		if (bunch_ellipse.add(ellipse))
 			cerr << "adding ellipse failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "polygon %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
-		auto polygon = Polygon(x, y, a, b, s, &scr);
-		polygon.draw();
+		auto polygon = new Polygon(x, y, a, b, s, &scr);
+		polygon->draw();
 		if (bunch_polygon.add(polygon))
 			cerr << "adding polygon failed" << endl;
 		else
 			return 0;
 	} else if (sscanf(command, "line %i %i %i %i %c", &x, &y, &a, &b, &s) == 5) {
-		auto line = Line(x, y, a, b, s, &scr);
-		line.draw();
+		auto line = new Line(x, y, a, b, s, &scr);
+		line->draw();
 		if (bunch_line.add(line))
 			cerr << "adding line failed" << endl;
 		else
