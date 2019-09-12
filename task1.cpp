@@ -727,11 +727,14 @@ class Bunch {
 public:
 	Bunch() :
 		length{0} {}
-	~Bunch() {}
+	~Bunch() {
+		while (length > 0)
+			remove();
+	}
 	size_t get_length() {
 		return length;
 	}
-	S &operator[](size_t index) {
+	S *operator[](size_t index) {
 		return items[index];
 	}
 	void clear() {

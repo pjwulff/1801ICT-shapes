@@ -606,9 +606,10 @@ public:
 	}
 };
 
+template <class S>
 class Bunch {
 	static int const max_length = 32;
-	Shape *items[max_length];
+	S *items[max_length];
 	size_t length;
 public:
 	Bunch() :
@@ -620,13 +621,13 @@ public:
 	size_t get_length() {
 		return length;
 	}
-	Shape *operator[](size_t index) {
+	S *operator[](size_t index) {
 		return items[index];
 	}
 	void clear() {
 		length = 0;
 	}
-	int add(Shape *item) {
+	int add(S *item) {
 		if (length < max_length) {
 			items[length++] = item;
 			return 0;
@@ -659,7 +660,7 @@ public:
 	}
 };
 
-void draw_bunch(Bunch &bunch, size_t index, screen &scr)
+void draw_bunch(Bunch<Shape> &bunch, size_t index, screen &scr)
 {
 	if (index <= bunch.get_length()) {
 		bunch.paint(index);
@@ -674,7 +675,7 @@ void bad_input()
 	cerr << "bad input" << endl;
 }
 
-int add(Bunch &bunch, screen &scr, char const *command)
+int add(Bunch<Shape> &bunch, screen &scr, char const *command)
 {
 	int x, y, a, b;
 	char s;
@@ -710,7 +711,7 @@ int add(Bunch &bunch, screen &scr, char const *command)
 	return -1;
 }
 
-int read(Bunch &bunch, screen &scr, char const *filename)
+int read(Bunch<Shape> &bunch, screen &scr, char const *filename)
 {
 	ifstream file;
 	file.open(filename);
@@ -729,7 +730,7 @@ int read(Bunch &bunch, screen &scr, char const *filename)
 	return 0;
 }
 
-int write(Bunch &bunch, char const *filename)
+int write(Bunch<Shape> &bunch, char const *filename)
 {
 	ofstream file;
 	file.open(filename);
@@ -737,7 +738,7 @@ int write(Bunch &bunch, char const *filename)
 	return 0;
 }
 
-int remove(Bunch &bunch)
+int remove(Bunch<Shape> &bunch)
 {
 	if (bunch.remove()) {
 		cerr << "failed to remove shape" << endl;
@@ -754,7 +755,7 @@ main()
 	char const *cstr;
 	char filename[256];
 	int index;
-	Bunch bunch;
+	Bunch<Shape> bunch;
 	screen scr;
 	while (true) {
 		cout << "> ";
